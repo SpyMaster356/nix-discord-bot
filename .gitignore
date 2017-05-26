@@ -2,6 +2,7 @@ node_modules
 coverage
 
 \.idea/workspace\.xml
+\.idea/*
 
 config\.private\.js
 
