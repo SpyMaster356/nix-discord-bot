@@ -1,18 +1,15 @@
 'use strict';
 const fs = require('fs');
-const Discord = require('discord.js');
 
-const Nix = require('./lib/nix');
-const cfg = require('./config.js');
+const Nix = require('nix-core');
+const config = require('./config.js');
 
-const discordClient = new Discord.Client();
-
-let nix = new Nix(discordClient, cfg);
+let nix = new Nix(config);
 
 // Load every command in the commands folder
-fs.readdirSync('./lib/commands')
+fs.readdirSync('./commands')
   .forEach((file) => {
-    nix.addCommand(require('./lib/commands/' + file));
+    nix.addCommand(require('./commands/' + file));
   });
 
 nix.listen()

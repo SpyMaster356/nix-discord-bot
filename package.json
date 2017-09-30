@@ -19,12 +19,15 @@
     "bot": "node --harmony_trailing_commas ./index.js",
     "bot-debug": "node %NODE_DEBUG_OPTION% --harmony_trailing_commas ./index.js"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^4.8.0"
+  },
   "repository": "https://github.com/SpyMaster356/nix-discord-bot",
   "license": "MIT",
   "dependencies": {
-    "discord.js": "^11.1.0",
+    "discord.js": "^11.2.1",
     "git-rev": "^0.2.1",
+    "nix-core": "git+https://github.com/SpyMaster356/nix-core.git",
     "rx": "^4.1.0"
   }
 }

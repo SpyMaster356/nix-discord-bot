@@ -1,10 +1,4 @@
-const Rx = require('rx');
-
-const DataManager = require('../data-manager');
-const Command = require('../command');
-const Response = require('../response');
-
-let BoopCommand = new Command({
+let BoopCommand = {
   name: 'read',
   description: 'Reads a value from the server\'s data',
   adminOnly: true,
@@ -17,25 +11,25 @@ let BoopCommand = new Command({
     },
   ],
 
-  run (context) {
+  run (context, response) {
     let dataManager = context.nix.dataManager;
 
     if (context.channel.type !== 'text') {
-      let response = new Response(Response.TYPE_REPLY);
+      response.type = 'reply';
       response.content = 'This command can only be run from a server.';
-      return Rx.Observable.just(response);
+      return response.send();
     }
 
-    let response = new Response(Response.TYPE_MESSAGE);
 
     return dataManager.getGuildData(context.guild.id)
       .map((savedData) => savedData[context.args.key])
-      .map((savedValue) => DataManager.formatForMsg(savedValue))
+      .map((savedValue) => dataManager.formatForMsg(savedValue))
       .flatMap((stringValue) => {
+        response.type = 'message';
         response.content = stringValue;
-        return Rx.Observable.just(response);
+        return response.send();
       });
   },
-});
+};
 
 module.exports = BoopCommand;
