@@ -32,7 +32,7 @@ module.exports = {
     let newRole = findRole(context.message.guild, foundRegion.role);
     if (!newRole) {
       response.type = 'message';
-      response.content = 'Looks like the role ' + role + ' doesn\'t exist. Can you ask an admin to create that role?';
+      response.content = 'Looks like the role ' + foundRegion.role + ' doesn\'t exist. Can you ask an admin to create that role?';
       return response.send();
     }
 
@@ -40,7 +40,7 @@ module.exports = {
       .map(() => {
         response.type = 'reply';
         response.content = 'I\'ve updated your region to ' + foundRegion.name;
-        return response;
+        return response.send();
       })
       .catch(() => {
         response.type = 'message';
