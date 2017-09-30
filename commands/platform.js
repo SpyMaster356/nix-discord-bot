@@ -1,25 +1,8 @@
 const Rx = require('rx');
 
-const Command = require('../command');
-const Response = require('../response');
+const platforms = require('../config/platforms');
 
-const platforms = require('../../config/platforms');
-
-let responses = {
-  platformNotFound: (platform) => {
-    let response = new Response(Response.TYPE_REPLY);
-    response.content = 'I\'m sorry, but \'' + platform + '\' is not an available platform.';
-    return response;
-  },
-  unableToUpdateNickname: () => {
-    let response = new Response(Response.TYPE_REPLY);
-    response.content = 'I\'m sorry, but I was not able to update your nickname. Please ask an admin to make sure I ' +
-      'have the "Manage Nicknames" permission.';
-    return response;
-  },
-};
-
-module.exports = new Command({
+module.exports = {
   name: 'platform',
   description: 'Sets the platform that you most often play Overwatch on.',
   args: [
@@ -30,27 +13,33 @@ module.exports = new Command({
     },
   ],
 
-  run(context) {
+  run(context, response) {
     if (context.channel.type !== 'text') {
-      let response = new Response(Response.TYPE_REPLY);
+      response.type = 'reply';
       response.content = 'You can only change your platform from a server.';
-      return Rx.Observable.just(response);
+      return response.send();
     }
 
     let foundPlatform = findPlatformWithName(context.args.platform);
     if (!foundPlatform) {
-      return Rx.Observable.just(responses.platformNotFound(context.args.platform));
+      response.type = 'reply';
+      response.content = 'I\'m sorry, but \'' + platform + '\' is not an available platform.';
+      return response.send();
     }
 
     return setPlatformTag(context.member, foundPlatform)
       .map((platform) => {
-        let response = new Response(Response.TYPE_REPLY);
+        response.type = 'reply';
         response.content = 'I\'ve updated your platform to ' + platform.name;
-        return response;
+        return response.send();
       })
-      .catch(() => Rx.Observable.just(responses.unableToUpdateNickname()));
+      .catch(() => {
+        response.type = 'reply';
+        response.content = 'I\'m sorry, but I was not able to update your nickname. Please ask an admin to make sure I have the "Manage Nicknames" permission.';
+        return response.send();
+      });
   },
-});
+};
 
 function findPlatformWithName(name) {
   return platforms.find((platform) => platformHasName(platform, name));

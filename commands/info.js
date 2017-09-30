@@ -1,23 +1,23 @@
 const Rx = require('rx');
 const git = require('git-rev');
 
-const Command = require('../command');
-const Response = require('../response');
-const pkg = require('../../package.json');
+const pkg = require('../package.json');
 
-module.exports = new Command({
+const GitHashShort$ = Rx.Observable.fromCallback(git.short);
+
+module.exports = {
   name: "info",
   description: "Gets information about me",
 
-  run () {
-    return Rx.Observable.fromCallback(git.short)()
+  run (context, response) {
+    return GitHashShort$()
       .map((gitHash) => {
-        let response = new Response(Response.TYPE_MESSAGE);
+        response.type = 'message';
         response.content = getResponseBody(gitHash);
-        return response;
+        return response.send();
       });
   },
-});
+};
 
 function getResponseBody(gitHash) {
   return [

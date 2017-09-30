@@ -1,4 +1,4 @@
-const RandomReplyCommand = require('../random-reply-command');
+const RandomReplyCommand = require('../lib/random-reply-command');
 
 let MarryCommand = new RandomReplyCommand({
   name: 'marryme',

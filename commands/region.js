@@ -1,29 +1,8 @@
 const Rx = require('rx');
 
-const Command = require('../command');
-const Response = require('../response');
+const regions = require('../config/regions');
 
-const regions = require('../../config/regions');
-
-let responses = {
-  regionNotFound: (region) => {
-    let response = new Response(Response.TYPE_REPLY);
-    response.content = 'I\'m sorry, but \'' + region + '\' is not an available region.';
-    return response;
-  },
-  roleNotFound: (role) => {
-    let response = new Response(Response.TYPE_MESSAGE);
-    response.content = 'Looks like the role ' + role + ' doesn\'t exist. Can you ask an admin to create that role?';
-    return response;
-  },
-  unableToUpdateRoles: () => {
-    let response = new Response(Response.TYPE_MESSAGE);
-    response.content = 'Looks like I\'m unable to update your roles. Can you ask an admin to check my permissions?';
-    return response;
-  },
-};
-
-module.exports = new Command({
+module.exports = {
   name: 'region',
   description: 'Sets the Overwatch region that you most often play on.',
   args: [
@@ -34,34 +13,42 @@ module.exports = new Command({
     },
   ],
 
-  run: (context) => {
+  run: (context, response) => {
     let member = context.message.member;
 
     if (context.message.channel.type !== 'text') {
-      let response = new Response(Response.TYPE_REPLY);
+      response.type = 'reply';
       response.content = 'You can only change your region from a server.';
       return Rx.Observable.just(response);
     }
 
     let foundRegion = findRegionWithName(context.args.region);
     if (!foundRegion) {
-      return Rx.Observable.just(responses.regionNotFound(context.args.region));
+      response.type = 'reply';
+      response.content = 'I\'m sorry, but \'' + region + '\' is not an available region.';
+      return response.send();
     }
 
     let newRole = findRole(context.message.guild, foundRegion.role);
     if (!newRole) {
-      return Rx.Observable.just(responses.roleNotFound(foundRegion.role));
+      response.type = 'message';
+      response.content = 'Looks like the role ' + role + ' doesn\'t exist. Can you ask an admin to create that role?';
+      return response.send();
     }
 
     return setRegionRole(member, newRole)
       .map(() => {
-        let response = new Response(Response.TYPE_REPLY);
+        response.type = 'reply';
         response.content = 'I\'ve updated your region to ' + foundRegion.name;
         return response;
       })
-      .catch((error) => Rx.Observable.just(responses.unableToUpdateRoles()));
+      .catch(() => {
+        response.type = 'message';
+        response.content = 'Looks like I\'m unable to update your roles. Can you ask an admin to check my permissions?';
+        return response.send();
+      });
   },
-});
+};
 
 function findRegionWithName(name) {
   return regions.find((region) => regionHasName(region, name));
