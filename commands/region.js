@@ -19,13 +19,13 @@ module.exports = {
     if (context.message.channel.type !== 'text') {
       response.type = 'reply';
       response.content = 'You can only change your region from a server.';
-      return Rx.Observable.just(response);
+      return response.send();
     }
 
     let foundRegion = findRegionWithName(context.args.region);
     if (!foundRegion) {
       response.type = 'reply';
-      response.content = 'I\'m sorry, but \'' + region + '\' is not an available region.';
+      response.content = 'I\'m sorry, but \'' + context.args.region + '\' is not an available region.';
       return response.send();
     }
 
