@@ -23,7 +23,7 @@ module.exports = {
     let foundPlatform = findPlatformWithName(context.args.platform);
     if (!foundPlatform) {
       response.type = 'reply';
-      response.content = 'I\'m sorry, but \'' + platform + '\' is not an available platform.';
+      response.content = 'I\'m sorry, but \'' + context.args.platform + '\' is not an available platform.';
       return response.send();
     }
 
