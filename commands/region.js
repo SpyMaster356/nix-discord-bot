@@ -42,10 +42,33 @@ module.exports = {
         response.content = 'I\'ve updated your region to ' + foundRegion.name;
         return response.send();
       })
-      .catch(() => {
-        response.type = 'message';
-        response.content = 'Looks like I\'m unable to update your roles. Can you ask an admin to check my permissions?';
-        return response.send();
+      .catch((error) => {
+        if (error.name === 'DiscordAPIError') {
+          if (error.message === "Missing Permissions") {
+            response.type = 'message';
+            response.content =
+              `Whoops, I do not have permission to update user roles. Can you ask an admin to grant me the ` +
+              `"Manage Roles" permission?`;
+            return response.send();
+          }
+
+          if (error.message === "Privilege is too low...") {
+            response.content =
+              `I'm unable to change your roles; Your permissions outrank mine.`;
+            return response.send();
+          }
+
+          response.type = 'message';
+          response.content = `Err... Discord returned an unexpected error when I tried to update your nickname.`;
+          context.nix.messageOwner(
+            "I got this error when I tried to update someone's platform:",
+            {embed: this.createErrorEmbed(context, error)}
+          );
+
+          return response.send();
+        }
+
+        return Rx.Observable.throw(error);
       });
   },
 };

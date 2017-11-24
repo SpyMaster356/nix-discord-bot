@@ -33,10 +33,27 @@ module.exports = {
         response.content = 'I\'ve updated your platform to ' + platform.name;
         return response.send();
       })
-      .catch(() => {
-        response.type = 'reply';
-        response.content = 'I\'m sorry, but I was not able to update your nickname. Please ask an admin to make sure I have the "Manage Nicknames" permission.';
-        return response.send();
+      .catch((error) => {
+        if (error.name === 'DiscordAPIError') {
+          response.type = 'message';
+
+          if (error.message === "Missing Permissions" || error.message === "Privilege is too low...") {
+            response.content =
+              `Whoops, I do not have permission to update your username. Ether I'm missing the "Manage Nicknames", ` +
+              `or your permissions outrank mine.`;
+            return response.send();
+          }
+
+          response.content = `Err... Discord returned an unexpected error when I tried to update your nickname.`;
+          context.nix.messageOwner(
+            "I got this error when I tried to update someone's platform:",
+            {embed: this.createErrorEmbed(context, error)}
+          );
+
+          return response.send();
+        }
+
+        return Rx.Observable.throw(error);
       });
   },
 };
