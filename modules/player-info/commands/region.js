@@ -1,6 +1,6 @@
 const Rx = require('rx');
 
-const regions = require('../config/regions');
+const regions = require('../../../config/regions');
 
 module.exports = {
   name: 'region',
