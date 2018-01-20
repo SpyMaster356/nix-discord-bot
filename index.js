@@ -2,14 +2,14 @@
 const fs = require('fs');
 
 const Nix = require('nix-core');
-const config = require('./config.js');
+const config = require('./config/config.js');
 
 let nix = new Nix(config);
 
-// Load every command in the commands folder
-fs.readdirSync('./commands')
+// Load every module in the modules folder
+fs.readdirSync('./modules')
   .forEach((file) => {
-    nix.addCommand(require('./commands/' + file));
+    nix.addModule(require('./modules/' + file));
   });
 
 nix.listen()

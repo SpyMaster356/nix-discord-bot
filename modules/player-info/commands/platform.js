@@ -1,6 +1,6 @@
 const Rx = require('rx');
 
-const platforms = require('../config/platforms');
+const platforms = require('../../../config/platforms');
 
 module.exports = {
   name: 'platform',

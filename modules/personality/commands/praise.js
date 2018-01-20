@@ -1,4 +1,4 @@
-const RandomReplyCommand = require('../lib/random-reply-command');
+const RandomReplyCommand = require('../../../lib/random-reply-command');
 
 let PraiseCommand = new RandomReplyCommand({
   name: 'praise',

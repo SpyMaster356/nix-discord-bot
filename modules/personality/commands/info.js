@@ -1,7 +1,7 @@
 const Rx = require('rx');
 const git = require('git-rev');
 
-const pkg = require('../package.json');
+const pkg = require('../../../package.json');
 
 const GitHashShort$ = Rx.Observable.fromCallback(git.short);
 
